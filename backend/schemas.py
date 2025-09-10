@@ -77,3 +77,8 @@ class Entrepreneur(EntrepreneurBase):
 class UserProblemSubmission(BaseModel):
     text: str
     user: Optional[str] = "anonymous"
+
+# --- Reddit Loader Schema ---
+class SubredditRequest(BaseModel):
+    subreddit: str
+    limit: int = 10

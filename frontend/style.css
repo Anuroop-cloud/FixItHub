@@ -33,7 +33,7 @@ body {
     margin-bottom: 20px;
 }
 
-.nav-bar button {
+.nav-bar button, .export-button {
     background-color: var(--surface);
     color: var(--text-primary);
     border: 1px solid var(--muted);
@@ -41,6 +41,7 @@ body {
     margin: 0 10px;
     cursor: pointer;
     border-radius: 5px;
+    font-size: 1em;
 }
 
 .nav-bar button.active {
@@ -121,4 +122,21 @@ body {
     border-radius: 5px;
     cursor: pointer;
     margin-top: 10px;
+}
+
+.filter-bar {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: var(--surface);
+    border-radius: 8px;
+}
+
+.filter-bar select {
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid var(--muted);
+    background-color: var(--card);
+    color: var(--text-primary);
 }
