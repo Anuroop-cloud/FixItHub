@@ -1,51 +1,11 @@
 const { useState, useEffect } = React;
 
-// --- Mock Data ---
-const mockProblems = [
-    {
-        id: 1,
-        summary: "The traffic light at the intersection of Main St and 1st Ave has a very short green light, causing long backups.",
-        keywords: "traffic, infrastructure, urban planning",
-        category: "Traffic",
-        source: "Reddit",
-        author_username: "user123",
-        score: 128,
-    },
-    {
-        id: 2,
-        summary: "Local parks have a severe littering problem, and there aren't enough trash cans available.",
-        keywords: "environment, community, sanitation",
-        category: "Environment",
-        source: "User",
-        author_username: "anonymous",
-        score: 45,
-    },
-];
-
-const mockEntrepreneurs = [
-    {
-        id: 1,
-        name: "Alice Johnson",
-        organization: "SolveIt Innovations",
-        expertise: "Healthcare, Technology",
-        description: "Focused on developing tech solutions for rural healthcare access.",
-        email: "contact@solveit.com"
-    },
-    {
-        id: 2,
-        name: "Bob Williams",
-        organization: "GreenFuture NGO",
-        expertise: "Environment, Governance",
-        description: "Advocating for sustainable urban development and green policies.",
-        email: "bob.w@greenfuture.org"
-    }
-];
-
+const API_URL = "http://localhost:8000";
 
 // --- Components ---
 
 const ProblemCard = ({ problem }) => {
-    const keywords = problem.keywords.split(',').map(k => k.trim());
+    const keywords = Array.isArray(problem.keywords) ? problem.keywords : (problem.keywords || '').split(',').map(k => k.trim());
     return (
         <div className="problem-card">
             <p className="summary">{problem.summary}</p>
@@ -54,7 +14,7 @@ const ProblemCard = ({ problem }) => {
             </div>
             <div className="meta-info">
                 <span className="author-info">
-                    {problem.source === 'Reddit' ? `r/subreddit · u/${problem.author_username}` : 'User Submission'}
+                    {problem.source === 'Reddit' ? `r/${problem.subreddit || 'subreddit'} · u/${problem.author_username}` : 'User Submission'}
                 </span>
                 <span className="score-badge">{problem.score} Karma</span>
             </div>
@@ -63,7 +23,7 @@ const ProblemCard = ({ problem }) => {
 };
 
 const EntrepreneurCard = ({ entrepreneur }) => {
-    const expertiseTags = entrepreneur.expertise.split(',').map(e => e.trim());
+    const expertiseTags = Array.isArray(entrepreneur.expertise) ? entrepreneur.expertise : (entrepreneur.expertise || '').split(',').map(e => e.trim());
     return (
         <div className="entrepreneur-card">
             <h2>{entrepreneur.name}</h2>
@@ -72,7 +32,7 @@ const EntrepreneurCard = ({ entrepreneur }) => {
             <div className="expertise">
                 {expertiseTags.map(tag => <span key={tag} className="expertise-tag">{tag}</span>)}
             </div>
-            <button className="contact-button" onClick={() => alert(`Contact: ${entrepreneur.email}`)}>
+            <button className="contact-button" onClick={() => alert(`Contact information has been requested.`)}>
                 Contact
             </button>
         </div>
@@ -84,14 +44,30 @@ const EntrepreneurCard = ({ entrepreneur }) => {
 
 const App = () => {
     const [currentPage, setCurrentPage] = useState('problems'); // 'problems' or 'entrepreneurs'
-    // In a real app, this data would be fetched from the API
     const [problems, setProblems] = useState([]);
     const [entrepreneurs, setEntrepreneurs] = useState([]);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        // Simulating API fetch
-        setProblems(mockProblems);
-        setEntrepreneurs(mockEntrepreneurs);
+        const fetchData = async () => {
+            try {
+                const problemsRes = await fetch(`${API_URL}/getProblems`);
+                if (!problemsRes.ok) throw new Error('Failed to fetch problems');
+                const problemsData = await problemsRes.json();
+                setProblems(problemsData);
+
+                const entrepreneursRes = await fetch(`${API_URL}/getEntrepreneurs`);
+                if (!entrepreneursRes.ok) throw new Error('Failed to fetch entrepreneurs');
+                const entrepreneursData = await entrepreneursRes.json();
+                setEntrepreneurs(entrepreneursData);
+
+            } catch (err) {
+                setError(err.message);
+                console.error("Error fetching data:", err);
+            }
+        };
+
+        fetchData();
     }, []);
 
     return (
@@ -115,6 +91,8 @@ const App = () => {
             </header>
 
             <main className="container">
+                {error && <div style={{ color: 'red' }}>Error: {error}. Is the backend server running?</div>}
+
                 {currentPage === 'problems' && (
                     <div className="problems-feed">
                         {problems.map(p => <ProblemCard key={p.id} problem={p} />)}

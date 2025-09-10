@@ -1,34 +1,53 @@
 # Collective Problems & Entrepreneur Directory
 
-This project is a web application designed to collect real-world problems from sources like Reddit and user submissions, and to provide a directory of entrepreneurs and organizations who can help solve them.
+This project is a full-stack web application designed to collect real-world problems and connect them with entrepreneurs.
 
-This repository contains the complete frontend for the application. The backend was also developed, but could not be included due to persistent environment issues that prevented its successful deployment and integration.
+## Running the Application
 
-## Frontend
+To run this application, you will need to start both the backend server and the frontend.
 
-The frontend is a single-page application built with React (using a CDN for simplicity). It showcases the user interface for both the "Collective Problems" feed and the "Entrepreneurs" directory.
+### 1. Backend Setup
 
-### Running the Frontend
+The backend is a FastAPI application.
 
-1.  Navigate to the `frontend` directory.
-2.  Open the `index.html` file in a web browser.
+1.  **Navigate to the `backend` directory:**
+    ```bash
+    cd backend
+    ```
 
-The application will load with mock data, demonstrating the full UI and functionality.
+2.  **Install Dependencies:**
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-### Frontend Features
+3.  **Environment Variables (Optional):**
+    The backend is pre-configured to run with a local SQLite database. For features like fetching data from Reddit or using the Gemini API, you would need to create a `.env` file in the `backend` directory with the following content:
+    ```
+    REDDIT_CLIENT_ID="your_client_id"
+    REDDIT_CLIENT_SECRET="your_client_secret"
+    REDDIT_USER_AGENT="your_user_agent"
+    GEMINI_API_KEY="your_gemini_api_key"
+    ```
 
-*   **Problems Feed:** Displays a list of problems with summaries, keywords, source, and author information.
-*   **Entrepreneurs Directory:** Shows a list of entrepreneurs with their organization, expertise, and a contact button.
-*   **Navigation:** Allows switching between the two main pages.
-*   **Theming:** Implements the specified dark theme.
+4.  **Run the Backend Server:**
+    From the root directory of the project, run:
+    ```bash
+    uvicorn backend.main:app --reload
+    ```
+    The backend API will be available at `http://localhost:8000`. The server will start with some pre-populated dummy data.
 
-## Backend (Planned)
+### 2. Frontend Setup
 
-The backend was designed using FastAPI with a PostgreSQL (or SQLite for development) database. It was intended to provide the following features:
+The frontend is a React application.
 
-*   API endpoints to serve problems and entrepreneurs.
-*   Integration with the Reddit API to fetch problems.
-*   Integration with the Gemini API to process and categorize text.
-*   A user submission system.
+1.  **Open the Frontend:**
+    Navigate to the `frontend` directory and open the `index.html` file in a modern web browser.
 
-Unfortunately, due to the unstable development environment, the backend code could not be reliably created and integrated with the frontend. The backend code was written but lost after an environment reset. The code for the backend is available in the agent's turn history.
+2.  **View the Application:**
+    The application will connect to the running backend server and display the problems and entrepreneurs. You can switch between the two views using the navigation buttons.
+
+## Project Structure
+
+*   `/backend`: Contains the FastAPI application, database models, and API logic.
+*   `/frontend`: Contains the React single-page application.
+*   `README.md`: This file.
