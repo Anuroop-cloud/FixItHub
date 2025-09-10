@@ -1,9 +1,9 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from typing import List
 
-from . import models, schemas, crud
+from . import models, schemas, crud, services
 from .database import SessionLocal, engine, get_db
 
 # Create database tables
@@ -20,76 +20,86 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.on_event("startup")
-def startup_event():
-    db = SessionLocal()
-    # Check if data already exists
-    if not crud.get_problems(db):
-        print("Adding dummy data to the database...")
-        # Add dummy problems
-        crud.create_problem(db, schemas.ProblemCreate(
-            source="Reddit",
-            original_text="The traffic light at the intersection of Main St and 1st Ave has a very short green light, causing long backups.",
-            summary="A traffic light on a major street has a short green cycle, leading to significant traffic congestion.",
-            keywords=["traffic", "infrastructure", "urban planning"],
-            category="Traffic",
-            author_username="user123",
-            score=128,
-            processed=True
-        ))
-        crud.create_problem(db, schemas.ProblemCreate(
-            source="User",
-            original_text="Local parks have a severe littering problem, and there aren't enough trash cans available.",
-            summary="Public parks are suffering from excessive litter due to a lack of trash receptacles.",
-            keywords=["environment", "community", "sanitation"],
-            category="Environment",
-            author_username="anonymous",
-            score=45,
-            processed=True
-        ))
-
-        # Add dummy entrepreneurs
-        crud.create_entrepreneur(db, schemas.EntrepreneurCreate(
-            name="Alice Johnson",
-            organization="SolveIt Innovations",
-            expertise=["Healthcare", "Technology"],
-            description="Focused on developing tech solutions for rural healthcare access.",
-            email="contact@solveit.com"
-        ))
-        crud.create_entrepreneur(db, schemas.EntrepreneurCreate(
-            name="Bob Williams",
-            organization="GreenFuture NGO",
-            expertise=["Environment", "Governance"],
-            description="Advocating for sustainable urban development and green policies.",
-            email="bob.w@greenfuture.org"
-        ))
-    db.close()
-
-
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the Collective Problems API"}
 
 # --- Problems Endpoints ---
 
+from typing import Optional
+
 @app.get("/getProblems", response_model=List[schemas.Problem])
-def get_problems(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    problems = crud.get_problems(db, skip=skip, limit=limit)
+def get_problems(
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db),
+    source: Optional[str] = None,
+    category: Optional[str] = None
+):
+    problems = crud.get_problems(db, skip=skip, limit=limit, source=source, category=category)
     return problems
 
 @app.post("/submitProblem", response_model=schemas.Problem)
 def submit_problem(submission: schemas.UserProblemSubmission, db: Session = Depends(get_db)):
-    # In a real implementation, this would call the Gemini API.
-    # For now, we'll just create a problem with a placeholder summary.
+    # 1. Process the text with Gemini
+    processed_data = services.process_text_with_gemini(text=submission.text, source="User")
+
+    # 2. Create the problem in the database
     problem_to_create = schemas.ProblemCreate(
         source="User",
         original_text=submission.text,
         author_username=submission.user,
-        summary="[AI Summary Placeholder]",
-        keywords=["user submission"],
-        category="Other",
+        summary=processed_data.get("summary"),
+        keywords=processed_data.get("keywords"),
+        category=processed_data.get("category"),
+        processed=True
     )
     return crud.create_problem(db=db, problem=problem_to_create)
+
+def load_and_process_reddit_data(subreddit_req: schemas.SubredditRequest, db: Session):
+    """Helper function to run in the background."""
+    print(f"Fetching posts from r/{subreddit_req.subreddit}...")
+    try:
+        posts = services.get_reddit_posts(subreddit_req.subreddit, subreddit_req.limit)
+        print(f"Found {len(posts)} posts. Processing with Gemini...")
+
+        for post in posts:
+            # Check if problem already exists
+            existing = db.query(models.Problem).filter(models.Problem.original_text == post["selftext"]).first()
+            if existing:
+                print(f"Skipping existing problem: {post['title']}")
+                continue
+
+            full_text = f"{post['title']}\n\n{post['selftext']}"
+            processed_data = services.process_text_with_gemini(text=full_text, source="Reddit")
+
+            problem_to_create = schemas.ProblemCreate(
+                source="Reddit",
+                subreddit=post["subreddit"],
+                author_username=post["author_username"],
+                author_karma=post["author_karma"],
+                original_text=post["selftext"],
+                summary=processed_data.get("summary"),
+                keywords=processed_data.get("keywords"),
+                category=processed_data.get("category"),
+                score=post["score"],
+                processed=True
+            )
+            crud.create_problem(db=db, problem=problem_to_create)
+            print(f"Saved problem: {post['title']}")
+
+    except Exception as e:
+        print(f"An error occurred during Reddit data loading: {e}")
+
+@app.post("/loadRedditData")
+def load_reddit_data(subreddit_req: schemas.SubredditRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    """
+    Fetches posts from a subreddit, processes them, and stores them.
+    This is run as a background task to avoid long response times.
+    """
+    background_tasks.add_task(load_and_process_reddit_data, subreddit_req, db)
+    return {"message": f"Started loading data from r/{subreddit_req.subreddit} in the background."}
+
 
 # --- Entrepreneurs Endpoints ---
 
@@ -98,11 +108,27 @@ def get_entrepreneurs(skip: int = 0, limit: int = 100, db: Session = Depends(get
     entrepreneurs = crud.get_entrepreneurs(db, skip=skip, limit=limit)
     return entrepreneurs
 
-# Placeholder for other endpoints
-@app.post("/loadRedditData")
-def load_reddit_data():
-    return {"message": "This endpoint is a placeholder for fetching data from Reddit."}
+# --- Vote Endpoint ---
+
+from fastapi.responses import JSONResponse
 
 @app.post("/voteProblem")
 def vote_problem(vote: schemas.VoteCreate, db: Session = Depends(get_db)):
     return crud.create_vote(db=db, vote=vote, problem_id=vote.problem_id)
+
+# --- Export Endpoint ---
+
+@app.get("/exportProblems")
+def export_problems(db: Session = Depends(get_db)):
+    """
+    Exports all problems to a JSON file.
+    """
+    problems = crud.get_problems(db, limit=1000) # Set a high limit for export
+
+    # We need to convert the SQLAlchemy objects to dictionaries
+    problems_dict = [schemas.Problem.model_validate(p).model_dump() for p in problems]
+
+    headers = {
+        "Content-Disposition": "attachment; filename=\"collective_problems_export.json\""
+    }
+    return JSONResponse(content=problems_dict, headers=headers)

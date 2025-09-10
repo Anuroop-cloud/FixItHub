@@ -6,8 +6,15 @@ from . import models, schemas
 def get_problem(db: Session, problem_id: int):
     return db.query(models.Problem).filter(models.Problem.id == problem_id).first()
 
-def get_problems(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Problem).offset(skip).limit(limit).all()
+from typing import Optional
+
+def get_problems(db: Session, skip: int = 0, limit: int = 100, source: Optional[str] = None, category: Optional[str] = None):
+    query = db.query(models.Problem)
+    if source:
+        query = query.filter(models.Problem.source == source)
+    if category:
+        query = query.filter(models.Problem.category == category)
+    return query.offset(skip).limit(limit).all()
 
 def create_problem(db: Session, problem: schemas.ProblemCreate):
     keywords_str = ",".join(problem.keywords) if problem.keywords else ""
