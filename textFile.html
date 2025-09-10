@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CollectiveProblems - Real-World Issues & Solutions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #000000;
+            color: #e6e6e6;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        .navbar {
+            background-color: #0b0b0b;
+            border-bottom: 1px solid #1a1a1a;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #e6e6e6;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: #bdbdbd;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: #e6e6e6;
+            background-color: #1a1a1a;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Section Headers */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        /* Buttons */
+        .btn {
+            background-color: #9e9e9e;
+            color: #000;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background-color: #bdbdbd;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: #1a1a1a;
+            color: #e6e6e6;
+        }
+
+        .btn-secondary:hover {
+            background-color: #333;
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            background-color: #0b0b0b;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .filter-label {
+            color: #bdbdbd;
+            font-size: 0.9rem;
+        }
+
+        .filter-select {
+            background-color: #1a1a1a;
+            color: #e6e6e6;
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 0.5rem;
+            outline: none;
+        }
+
+        .filter-chip {
+            background-color: #1a1a1a;
+            color: #bdbdbd;
+            padding: 0.25rem 0.75rem;
+            border-radius: 16px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+
+        .filter-chip:hover, .filter-chip.active {
+            background-color: #9e9e9e;
+            color: #000;
+        }
+
+        /* Card Grid */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Problem Cards */
+        .problem-card {
+            background-color: #101010;
+            border: 1px solid #1a1a1a;
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .problem-card:hover {
+            border-color: #333;
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .card-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .source-badge {
+            background-color: #1a1a1a;
+            color: #bdbdbd;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            width: fit-content;
+        }
+
+        .author-info {
+            color: #bdbdbd;
+            font-size: 0.8rem;
+        }
+
+        .karma-score {
+            color: #9e9e9e;
+            font-size: 0.7rem;
+        }
+
+        .problem-summary {
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .keywords {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .keyword-chip {
+            background-color: #1a1a1a;
+            color: #bdbdbd;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+        }
+
+        .category-badge {
+            background-color: #9e9e9e;
+            color: #000;
+            padding: 0.25rem 0.75rem;
+            border-radius: 16px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            width: fit-content;
+        }
+
+        /* Entrepreneur Cards */
+        .entrepreneur-card {
+            background-color: #101010;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .entrepreneur-card:hover {
+            border-color: #9e9e9e;
+            transform: translateY(-2px);
+        }
+
+        .entrepreneur-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .entrepreneur-org {
+            color: #bdbdbd;
+            margin-bottom: 1rem;
+        }
+
+        .expertise-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .expertise-tag {
+            background-color: #1a1a1a;
+            color: #9e9e9e;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+
+        .entrepreneur-desc {
+            color: #bdbdbd;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .contact-btn {
+            background-color: #9e9e9e;
+            color: #000;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .contact-btn:hover {
+            background-color: #bdbdbd;
+        }
+
+        /* Forms */
+        .form-container {
+            background-color: #0b0b0b;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #bdbdbd;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            background-color: #1a1a1a;
+            color: #e6e6e6;
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 0.75rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            border-color: #9e9e9e;
+        }
+
+        .form-textarea {
+            height: 120px;
+            resize: vertical;
+        }
+
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: #0b0b0b;
+            border-radius: 12px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #bdbdbd;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        /* Loading States */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            color: #bdbdbd;
+        }
+
+        .spinner {
+            border: 2px solid #1a1a1a;
+            border-top: 2px solid #9e9e9e;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+
+        /* Hide sections initially */
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* Stats */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background-color: #0b0b0b;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #9e9e9e;
+        }
+
+        .stat-label {
+            color: #bdbdbd;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">CollectiveProblems</div>
+            <div class="nav-links">
+                <div class="nav-link active" data-section="problems">Problems</div>
+                <div class="nav-link" data-section="entrepreneurs">Entrepreneurs</div>
+                <div class="nav-link" data-section="submit">Submit Problem</div>
+                <div class="nav-link" data-section="register">Join as Entrepreneur</div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Problems Section -->
+        <div id="problems-section" class="section active">
+            <div class="section-header">
+                <h1 class="section-title">Real-World Problems</h1>
+                <div>
+                    <button class="btn" onclick="loadRedditData()">Load Reddit Data</button>
+                    <button class="btn btn-secondary" onclick="exportData()">Export Data</button>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-number" id="total-problems">247</div>
+                    <div class="stat-label">Total Problems</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="reddit-problems">189</div>
+                    <div class="stat-label">From Reddit</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="user-problems">58</div>
+                    <div class="stat-label">User Submitted</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="entrepreneurs-count">34</div>
+                    <div class="stat-label">Entrepreneurs</div>
+                </div>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <span class="filter-label">Source:</span>
+                    <div class="filter-chip active" data-filter="source" data-value="all">All</div>
+                    <div class="filter-chip" data-filter="source" data-value="Reddit">Reddit</div>
+                    <div class="filter-chip" data-filter="source" data-value="User">User</div>
+                </div>
+                <div class="filter-group">
+                    <span class="filter-label">Category:</span>
+                    <div class="filter-chip active" data-filter="category" data-value="all">All</div>
+                    <div class="filter-chip" data-filter="category" data-value="Traffic">Traffic</div>
+                    <div class="filter-chip" data-filter="category" data-value="Environment">Environment</div>
+                    <div class="filter-chip" data-filter="category" data-value="Healthcare">Healthcare</div>
+                    <div class="filter-chip" data-filter="category" data-value="Education">Education</div>
+                    <div class="filter-chip" data-filter="category" data-value="Governance">Governance</div>
+                    <div class="filter-chip" data-filter="category" data-value="Technology">Technology</div>
+                </div>
+                <div class="filter-group">
+                    <span class="filter-label">Subreddit:</span>
+                    <select class="filter-select" id="subreddit-filter">
+                        <option value="all">All Subreddits</option>
+                        <option value="urbanplanning">r/urbanplanning</option>
+                        <option value="environment">r/environment</option>
+                        <option value="healthcare">r/healthcare</option>
+                        <option value="education">r/education</option>
+                        <option value="technology">r/technology</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Problems Grid -->
+            <div class="card-grid" id="problems-grid">
+                <!-- Sample Problem Cards -->
+                <div class="problem-card" data-source="Reddit" data-category="Traffic">
+                    <div class="card-header">
+                        <div class="card-meta">
+                            <div class="source-badge">r/urbanplanning</div>
+                            <div class="author-info">u/cityplanner_2024</div>
+                            <div class="karma-score">12,456 karma • 847 upvotes</div>
+                        </div>
+                        <div class="category-badge">Traffic</div>
+                    </div>
+                    <div class="problem-summary">
+                        Traffic congestion in downtown areas during rush hours causes significant delays and air pollution. Many cities lack efficient public transport alternatives, forcing residents to rely on private vehicles.
+                    </div>
+                    <div class="keywords">
+                        <div class="keyword-chip">traffic</div>
+                        <div class="keyword-chip">congestion</div>
+                        <div class="keyword-chip">public-transport</div>
+                        <div class="keyword-chip">urban-planning</div>
+                        <div class="keyword-chip">pollution</div>
+                    </div>
+                </div>
+
+                <div class="problem-card" data-source="User" data-category="Healthcare">
+                    <div class="card-header">
+                        <div class="card-meta">
+                            <div class="source-badge">User Submission</div>
+                            <div class="author-info">Anonymous</div>
+                        </div>
+                        <div class="category-badge">Healthcare</div>
+                    </div>
+                    <div class="problem-summary">
+                        Mental health services are severely understaffed in rural areas. Wait times for appointments exceed 3 months, and many communities lack specialized care for anxiety and depression.
+                    </div>
+                    <div class="keywords">
+                        <div class="keyword-chip">mental-health</div>
+                        <div class="keyword-chip">rural</div>
+                        <div class="keyword-chip">understaffed</div>
+                        <div class="keyword-chip">wait-times</div>
+                    </div>
+                </div>
+
+                <div class="problem-card" data-source="Reddit" data-category="Environment">
+                    <div class="card-header">
+                        <div class="card-meta">
+                            <div class="source-badge">r/environment</div>
+                            <div class="author-info">u/eco_warrior</div>
+                            <div class="karma-score">8,923 karma • 1,234 upvotes</div>
+                        </div>
+                        <div class="category-badge">Environment</div>
+                    </div>
+                    <div class="problem-summary">
+                        Plastic waste in oceans continues to grow despite recycling efforts. Microplastics are now found in drinking water and food chains, posing unknown health risks.
+                    </div>
+                    <div class="keywords">
+                        <div class="keyword-chip">plastic-waste</div>
+                        <div class="keyword-chip">ocean-pollution</div>
+                        <div class="keyword-chip">microplastics</div>
+                        <div class="keyword-chip">recycling</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Entrepreneurs Section -->
+        <div id="entrepreneurs-section" class="section">
+            <div class="section-header">
+                <h1 class="section-title">Solution Builders</h1>
+                <button class="btn" onclick="openModal('register-modal')">Join as Entrepreneur</button>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <span class="filter-label">Expertise:</span>
+                    <div class="filter-chip active" data-filter="expertise" data-value="all">All</div>
+                    <div class="filter-chip" data-filter="expertise" data-value="Healthcare">Healthcare</div>
+                    <div class="filter-chip" data-filter="expertise" data-value="Technology">Technology</div>
+                    <div class="filter-chip" data-filter="expertise" data-value="Environment">Environment</div>
+                    <div class="filter-chip" data-filter="expertise" data-value="Education">Education</div>
+                    <div class="filter-chip" data-filter="expertise" data-value="Governance">Governance</div>
+                </div>
+            </div>
+
+            <!-- Entrepreneurs Grid -->
+            <div class="card-grid" id="entrepreneurs-grid">
+                <!-- Sample Entrepreneur Cards -->
+                <div class="entrepreneur-card">
+                    <div class="entrepreneur-name">Sarah Chen</div>
+                    <div class="entrepreneur-org">GreenTech Solutions</div>
+                    <div class="expertise-tags">
+                        <div class="expertise-tag">Environment</div>
+                        <div class="expertise-tag">Technology</div>
+                    </div>
+                    <div class="entrepreneur-desc">
+                        Developing sustainable technology solutions for environmental challenges. Specialized in waste management systems and renewable energy integration.
+                    </div>
+                    <a href="mailto:sarah@greentech.com" class="contact-btn">Contact</a>
+                </div>
+
+                <div class="entrepreneur-card">
+                    <div class="entrepreneur-name">Dr. Marcus Johnson</div>
+                    <div class="entrepreneur-org">HealthAccess NGO</div>
+                    <div class="expertise-tags">
+                        <div class="expertise-tag">Healthcare</div>
+                        <div class="expertise-tag">Rural Development</div>
+                    </div>
+                    <div class="entrepreneur-desc">
+                        Focused on improving healthcare access in underserved communities. Experience in telemedicine and mobile health clinic deployment.
+                    </div>
+                    <a href="mailto:marcus@healthaccess.org" class="contact-btn">Contact</a>
+                </div>
+
+                <div class="entrepreneur-card">
+                    <div class="entrepreneur-name">Alex Rivera</div>
+                    <div class="entrepreneur-org">UrbanFlow Startup</div>
+                    <div class="expertise-tags">
+                        <div class="expertise-tag">Transportation</div>
+                        <div class="expertise-tag">Urban Planning</div>
+                    </div>
+                    <div class="entrepreneur-desc">
+                        Building smart traffic management solutions and public transit optimization tools for modern cities.
+                    </div>
+                    <a href="mailto:alex@urbanflow.tech" class="contact-btn">Contact</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit Problem Section -->
+        <div id="submit-section" class="section">
+            <div class="section-header">
+                <h1 class="section-title">Submit a Problem</h1>
+            </div>
+
+            <div class="form-container">
+                <form id="submit-form">
+                    <div class="form-group">
+                        <label class="form-label">Problem Description *</label>
+                        <textarea class="form-textarea" id="problem-text" placeholder="Describe the real-world problem you've observed..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Your Identifier (Optional)</label>
+                        <input type="text" class="form-input" id="user-identifier" placeholder="Username or leave blank for anonymous">
+                    </div>
+                    <button type="submit" class="btn">Submit Problem</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Register Entrepreneur Section -->
+        <div id="register-section" class="section">
+            <div class="section-header">
+                <h1 class="section-title">Join as Entrepreneur</h1>
+            </div>
+
+            <div class="form-container">
+                <form id="register-form">
+                    <div class="form-group">
+                        <label class="form-label">Name *</label>
+                        <input type="text" class="form-input" id="entrepreneur-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Organization *</label>
+                        <input type="text" class="form-input" id="entrepreneur-org" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Expertise Areas *</label>
+                        <div class="filter-bar" style="background: #1a1a1a; margin-bottom: 0;">
+                            <div class="filter-chip" data-expertise="Healthcare">Healthcare</div>
+                            <div class="filter-chip" data-expertise="Technology">Technology</div>
+                            <div class="filter-chip" data-expertise="Environment">Environment</div>
+                            <div class="filter-chip" data-expertise="Education">Education</div>
+                            <div class="filter-chip" data-expertise="Governance">Governance</div>
+                            <div class="filter-chip" data-expertise="Other">Other</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description *</label>
+                        <textarea class="form-textarea" id="entrepreneur-desc" placeholder="Describe your background and how you solve problems..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email *</label>
+                        <input type="email" class="form-input" id="entrepreneur-email" required>
+                    </div>
+                    <button type="submit" class="btn">Register</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="register-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Quick Registration</h2>
+                <button class="modal-close" onclick="closeModal('register-modal')">&times;</button>
+            </div>
+            <!-- Same form as register section -->
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let currentFilters = {
+            source: 'all',
+            category: 'all',
+            subreddit: 'all',
+            expertise: 'all'
+        };
+
+        let selectedExpertise = [];
+        let problems = [];
+        let entrepreneurs = [];
+
+        // Navigation
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                // Update active nav link
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+
+                // Show corresponding section
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                document.getElementById(link.dataset.section + '-section').classList.add('active');
+            });
+        });
+
+        // Filter handling
+        document.querySelectorAll('.filter-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                const filterType = chip.dataset.filter;
+                const filterValue = chip.dataset.value;
+                const expertiseValue = chip.dataset.expertise;
+
+                if (expertiseValue) {
+                    // Handle expertise selection for entrepreneur registration
+                    chip.classList.toggle('active');
+                    if (selectedExpertise.includes(expertiseValue)) {
+                        selectedExpertise = selectedExpertise.filter(e => e !== expertiseValue);
+                    } else {
+                        selectedExpertise.push(expertiseValue);
+                    }
+                } else if (filterType) {
+                    // Handle regular filters
+                    const siblingChips = document.querySelectorAll(`[data-filter="${filterType}"]`);
+                    siblingChips.forEach(sibling => sibling.classList.remove('active'));
+                    chip.classList.add('active');
+                    currentFilters[filterType] = filterValue;
+                    applyFilters();
+                }
+            });
+        });
+
+        // Apply filters to problems
+        function applyFilters() {
+            const problemCards = document.querySelectorAll('.problem-card');
+            
+            problemCards.forEach(card => {
+                const source = card.dataset.source;
+                const category = card.dataset.category;
+                
+                let show = true;
+                
+                if (currentFilters.source !== 'all' && source !== currentFilters.source) {
+                    show = false;
+                }
+                
+                if (currentFilters.category !== 'all' && category !== currentFilters.category) {
+                    show = false;
+                }
+                
+                card.style.display = show ? 'block' : 'none';
+            });
+        }
+
+        // Modal functions
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Submit problem form
+        document.getElementById('submit-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const problemText = document.getElementById('problem-text').value;
+            const userIdentifier = document.getElementById('user-identifier').value || 'Anonymous';
+            
+            if (!problemText.trim()) return;
+            
+            // Show loading state
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.innerHTML = '<div class="spinner"></div>Processing...';
+            submitBtn.disabled = true;
+            
+            try {
+                // Simulate AI processing (would call Gemini API in real implementation)
+                await simulateGeminiProcessing(problemText, userIdentifier);
+                
+                // Reset form
+                document.getElementById('submit-form').reset();
+                alert('Problem submitted successfully!');
+                
+                // Switch to problems view
+                document.querySelector('[data-section="problems"]').click();
+                
+            } catch (error) {
+                alert('Error submitting problem. Please try again.');
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Register entrepreneur form
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('entrepreneur-name').value;
+            const org = document.getElementById('entrepreneur-org').value;
+            const desc = document.getElementById('entrepreneur-desc').value;
+            const email = document.getElementById('entrepreneur-email').value;
+            
+            if (!name || !org || !desc || !email || selectedExpertise.length === 0) {
+                alert('Please fill in all required fields and select at least one expertise area.');
+                return;
+            }
+            
+            // Show loading state
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.innerHTML = '<div class="spinner"></div>Registering...';
+            submitBtn.disabled = true;
+            
+            try {
+                // Simulate registration (would call backend API in real implementation)
+                await simulateEntrepreneurRegistration({ name, org, desc, email, expertise: selectedExpertise });
+                
+                // Reset form
+                document.getElementById('register-form').reset();
+                selectedExpertise = [];
+                document.querySelectorAll('[data-expertise]').forEach(chip => chip.classList.remove('active'));
+                
+                alert('Registration successful! You are now listed in our entrepreneur directory.');
+                
+                // Switch to entrepreneurs view
+                document.querySelector('[data-section="entrepreneurs"]').click();
+                
+            } catch (error) {
+                alert('Error during registration. Please try again.');
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Load Reddit data function
+        async function loadRedditData() {
+            const button = event.target;
+            const originalText = button.textContent;
+            button.innerHTML = '<div class="spinner"></div>Loading Reddit Data...';
+            button.disabled = true;
+            
+            try {
+                // Simulate Reddit API call (would use PRAW or Reddit API in real implementation)
+                await simulateRedditDataLoad();
+                alert('Reddit data loaded successfully!');
+                
+            } catch (error) {
+                alert('Error loading Reddit data. Please try again.');
+            } finally {
+                button.textContent = originalText;
+                button.disabled = false;
+            }
+        }
+
+        // Export data function
+        function exportData() {
+            // Simulate CSV export
+            const csvContent = "data:text/csv;charset=utf-8," 
+                + "Source,Category,Summary,Keywords,Author,Karma,Created\n"
+                + "Reddit,Traffic,Traffic congestion in downtown areas,\"traffic,congestion,transport\",cityplanner_2024,12456,2024-01-15\n"
+                + "User,Healthcare,Mental health services understaffed,\"mental-health,rural,understaffed\",Anonymous,0,2024-01-16\n";
+            
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "collective_problems_export.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Simulation functions (replace with real API calls)
+        async function simulateGeminiProcessing(text, user) {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    // Simulate AI processing and adding to problems grid
+                    const problemsGrid = document.getElementById('problems-grid');
+                    const newCard = document.createElement('div');
+                    newCard.className = 'problem-card';
+                    newCard.dataset.source = 'User';
+                    newCard.dataset.category = 'Other';
+                    
+                    newCard.innerHTML = `
+                        <div class="card-header">
+                            <div class="card-meta">
+                                <div class="source-badge">User Submission</div>
+                                <div class="author-info">${user}</div>
+                            </div>
+                            <div class="category-badge">Other</div>
+                        </div>
+                        <div class="problem-summary">
+                            ${text.substring(0, 150)}${text.length > 150 ? '...' : ''}
+                        </div>
+                        <div class="keywords">
+                            <div class="keyword-chip">user-generated</div>
+                            <div class="keyword-chip">new</div>
+                        </div>
+                    `;
+                    
+                    problemsGrid.prepend(newCard);
+                    
+                    // Update stats
+                    const userProblemsCount = document.getElementById('user-problems');
+                    userProblemsCount.textContent = parseInt(userProblemsCount.textContent) + 1;
+                    const totalProblemsCount = document.getElementById('total-problems');
+                    totalProblemsCount.textContent = parseInt(totalProblemsCount.textContent) + 1;
+                    
+                    resolve();
+                }, 2000);
+            });
+        }
+
+        async function simulateEntrepreneurRegistration(data) {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    // Add to entrepreneurs grid
+                    const entrepreneursGrid = document.getElementById('entrepreneurs-grid');
+                    const newCard = document.createElement('div');
+                    newCard.className = 'entrepreneur-card';
+                    
+                    const expertiseTags = data.expertise.map(exp => 
+                        `<div class="expertise-tag">${exp}</div>`
+                    ).join('');
+                    
+                    newCard.innerHTML = `
+                        <div class="entrepreneur-name">${data.name}</div>
+                        <div class="entrepreneur-org">${data.org}</div>
+                        <div class="expertise-tags">
+                            ${expertiseTags}
+                        </div>
+                        <div class="entrepreneur-desc">
+                            ${data.desc}
+                        </div>
+                        <a href="mailto:${data.email}" class="contact-btn">Contact</a>
+                    `;
+                    
+                    entrepreneursGrid.prepend(newCard);
+                    
+                    // Update stats
+                    const entrepreneursCount = document.getElementById('entrepreneurs-count');
+                    entrepreneursCount.textContent = parseInt(entrepreneursCount.textContent) + 1;
+                    
+                    resolve();
+                }, 1500);
+            });
+        }
+
+        async function simulateRedditDataLoad() {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    // Simulate adding new Reddit problems
+                    const problemsGrid = document.getElementById('problems-grid');
+                    
+                    const sampleProblems = [
+                        {
+                            subreddit: 'r/technology',
+                            author: 'techexpert_99',
+                            karma: '15,234',
+                            score: '2,156',
+                            category: 'Technology',
+                            summary: 'Digital divide widens as rural areas lack high-speed internet infrastructure needed for remote work and education.',
+                            keywords: ['digital-divide', 'rural', 'internet', 'infrastructure', 'remote-work']
+                        },
+                        {
+                            subreddit: 'r/education',
+                            author: 'teacher_advocate',
+                            karma: '8,567',
+                            score: '934',
+                            category: 'Education',
+                            summary: 'Teacher burnout reaches crisis levels due to oversized classrooms, inadequate resources, and administrative burden.',
+                            keywords: ['teacher-burnout', 'classroom-size', 'resources', 'administration', 'education-crisis']
+                        }
+                    ];
+                    
+                    sampleProblems.forEach(problem => {
+                        const newCard = document.createElement('div');
+                        newCard.className = 'problem-card';
+                        newCard.dataset.source = 'Reddit';
+                        newCard.dataset.category = problem.category;
+                        
+                        const keywordChips = problem.keywords.map(keyword => 
+                            `<div class="keyword-chip">${keyword}</div>`
+                        ).join('');
+                        
+                        newCard.innerHTML = `
+                            <div class="card-header">
+                                <div class="card-meta">
+                                    <div class="source-badge">${problem.subreddit}</div>
+                                    <div class="author-info">u/${problem.author}</div>
+                                    <div class="karma-score">${problem.karma} karma • ${problem.score} upvotes</div>
+                                </div>
+                                <div class="category-badge">${problem.category}</div>
+                            </div>
+                            <div class="problem-summary">
+                                ${problem.summary}
+                            </div>
+                            <div class="keywords">
+                                ${keywordChips}
+                            </div>
+                        `;
+                        
+                        problemsGrid.appendChild(newCard);
+                    });
+                    
+                    // Update stats
+                    const redditProblemsCount = document.getElementById('reddit-problems');
+                    redditProblemsCount.textContent = parseInt(redditProblemsCount.textContent) + sampleProblems.length;
+                    const totalProblemsCount = document.getElementById('total-problems');
+                    totalProblemsCount.textContent = parseInt(totalProblemsCount.textContent) + sampleProblems.length;
+                    
+                    resolve();
+                }, 3000);
+            });
+        }
+
+        // Initialize subreddit filter
+        document.getElementById('subreddit-filter').addEventListener('change', (e) => {
+            currentFilters.subreddit = e.target.value;
+            applyFilters();
+        });
+
+        // Close modals when clicking outside
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                }
+            });
+        });
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('CollectiveProblems platform initialized');
+        });
+    </script>
+</body>
+</html>
